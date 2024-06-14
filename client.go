@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/phires/go-guerrilla/log"
-	"github.com/phires/go-guerrilla/mail"
-	"github.com/phires/go-guerrilla/mail/rfc5321"
-	"github.com/phires/go-guerrilla/response"
+	"github.com/iedon/go-guerrilla/log"
+	"github.com/iedon/go-guerrilla/mail"
+	"github.com/iedon/go-guerrilla/mail/rfc5321"
+	"github.com/iedon/go-guerrilla/response"
 )
 
 // ClientState indicates which part of the SMTP transaction a given client is in.

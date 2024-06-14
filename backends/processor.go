@@ -1,7 +1,7 @@
 package backends
 
 import (
-	"github.com/phires/go-guerrilla/mail"
+	"github.com/iedon/go-guerrilla/mail"
 )
 
 type SelectTask int

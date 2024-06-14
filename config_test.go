@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/phires/go-guerrilla/backends"
-	"github.com/phires/go-guerrilla/log"
-	"github.com/phires/go-guerrilla/tests/testcert"
+	"github.com/iedon/go-guerrilla/backends"
+	"github.com/iedon/go-guerrilla/log"
+	"github.com/iedon/go-guerrilla/tests/testcert"
 )
 
 // a configuration file with a dummy backend
