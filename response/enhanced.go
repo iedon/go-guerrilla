@@ -146,15 +146,18 @@ type Responses struct {
 	ErrorShutdown          *Response
 
 	// The 200's
-	SuccessMailCmd       *Response
-	SuccessRcptCmd       *Response
-	SuccessResetCmd      *Response
-	SuccessVerifyCmd     *Response
-	SuccessNoopCmd       *Response
-	SuccessQuitCmd       *Response
-	SuccessDataCmd       *Response
-	SuccessStartTLSCmd   *Response
-	SuccessMessageQueued *Response
+	SuccessMailCmd                      *Response
+	SuccessRcptCmd                      *Response
+	SuccessResetCmd                     *Response
+	SuccessVerifyCmd                    *Response
+	SuccessNoopCmd                      *Response
+	SuccessQuitCmd                      *Response
+	SuccessDataCmd                      *Response
+	SuccessAuthLoginCmd                 *Response
+	ContinueAuthLoginRequireUsernameCmd *Response
+	ContinueAuthLoginRequirePasswordCmd *Response
+	SuccessStartTLSCmd                  *Response
+	SuccessMessageQueued                *Response
 }
 
 // Called automatically during package load to build up the Responses struct
@@ -238,6 +241,21 @@ func init() {
 	Canned.SuccessDataCmd = &Response{
 		BasicCode: 354,
 		Comment:   "354 Enter message, ending with '.' on a line by itself",
+	}
+
+	Canned.ContinueAuthLoginRequireUsernameCmd = &Response{
+		BasicCode: 334,
+		Comment:   "VXNlcm5hbWU6",
+	}
+
+	Canned.ContinueAuthLoginRequirePasswordCmd = &Response{
+		BasicCode: 334,
+		Comment:   "UGFzc3dvcmQ6",
+	}
+
+	Canned.SuccessAuthLoginCmd = &Response{
+		BasicCode: 235,
+		Comment:   "Authentication successful",
 	}
 
 	Canned.SuccessStartTLSCmd = &Response{

@@ -31,6 +31,10 @@ const (
 	ClientStartTLS
 	// Server will shutdown, client to shutdown on next command turn
 	ClientShutdown
+	// We have received AUTH LOGIN and are waiting a username
+	ClientAuthLoginUser
+	// We have received username and are waiting a password for AUTH LOGIN
+	ClientAuthLoginPassword
 )
 
 type client struct {

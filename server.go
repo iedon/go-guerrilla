@@ -70,18 +70,19 @@ type allowedHosts struct {
 type command []byte
 
 var (
-	cmdHELO     command = []byte("HELO")
-	cmdEHLO     command = []byte("EHLO")
-	cmdHELP     command = []byte("HELP")
-	cmdXCLIENT  command = []byte("XCLIENT")
-	cmdMAIL     command = []byte("MAIL FROM:")
-	cmdRCPT     command = []byte("RCPT TO:")
-	cmdRSET     command = []byte("RSET")
-	cmdVRFY     command = []byte("VRFY")
-	cmdNOOP     command = []byte("NOOP")
-	cmdQUIT     command = []byte("QUIT")
-	cmdDATA     command = []byte("DATA")
-	cmdSTARTTLS command = []byte("STARTTLS")
+	cmdHELO      command = []byte("HELO")
+	cmdEHLO      command = []byte("EHLO")
+	cmdHELP      command = []byte("HELP")
+	cmdXCLIENT   command = []byte("XCLIENT")
+	cmdMAIL      command = []byte("MAIL FROM:")
+	cmdRCPT      command = []byte("RCPT TO:")
+	cmdRSET      command = []byte("RSET")
+	cmdVRFY      command = []byte("VRFY")
+	cmdNOOP      command = []byte("NOOP")
+	cmdQUIT      command = []byte("QUIT")
+	cmdDATA      command = []byte("DATA")
+	cmdSTARTTLS  command = []byte("STARTTLS")
+	cmdAUTHLOGIN command = []byte("AUTH LOGIN")
 )
 
 func (c command) match(in []byte) bool {
@@ -382,6 +383,7 @@ func (s *server) handleClient(client *client) {
 	pipelining := "250-PIPELINING\r\n"
 	advertiseTLS := "250-STARTTLS\r\n"
 	advertiseEnhancedStatusCodes := "250-ENHANCEDSTATUSCODES\r\n"
+	advertiseAuthLogin := "250-AUTH LOGIN\r\n"
 	// The last line doesn't need \r\n since string will be printed as a new line.
 	// Also, Last line has no dash -
 	help := "250 HELP"
@@ -465,6 +467,7 @@ func (s *server) handleClient(client *client) {
 					pipelining,
 					advertiseTLS,
 					advertiseEnhancedStatusCodes,
+					advertiseAuthLogin,
 					help)
 
 			case cmdHELP.match(cmd):
@@ -552,6 +555,10 @@ func (s *server) handleClient(client *client) {
 				client.sendResponse(r.SuccessDataCmd)
 				client.state = ClientData
 
+			case cmdAUTHLOGIN.match(cmd):
+				client.sendResponse(r.ContinueAuthLoginRequireUsernameCmd, " ", "VXNlcm5hbWU6")
+				client.state = ClientAuthLoginUser
+
 			case sc.TLS.StartTLSOn && cmdSTARTTLS.match(cmd):
 
 				client.sendResponse(r.SuccessStartTLSCmd)
@@ -602,6 +609,60 @@ func (s *server) handleClient(client *client) {
 				client.state = ClientShutdown
 			}
 			client.resetTransaction()
+
+		case ClientAuthLoginUser:
+			client.bufin.setLimit(CommandLineMaxLength)
+			input, err := s.readCommand(client)
+			s.log().Debugf("Client sent: %s", input)
+			if err == io.EOF {
+				s.log().WithError(err).Warnf("Client closed the connection: %s", client.RemoteIP)
+				return
+			} else if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+				s.log().WithError(err).Warnf("Timeout: %s", client.RemoteIP)
+				return
+			} else if err == LineLimitExceeded {
+				client.sendResponse(r.FailLineTooLong)
+				client.kill()
+				break
+			} else if err != nil {
+				s.log().WithError(err).Warnf("Read error: %s", client.RemoteIP)
+				client.kill()
+				break
+			}
+			if s.isShuttingDown() {
+				client.state = ClientShutdown
+				continue
+			}
+
+			client.sendResponse(r.ContinueAuthLoginRequirePasswordCmd, " ", "UGFzc3dvcmQ6")
+			client.state = ClientAuthLoginPassword
+
+		case ClientAuthLoginPassword:
+			client.bufin.setLimit(CommandLineMaxLength)
+			input, err := s.readCommand(client)
+			s.log().Debugf("Client sent: %s", input)
+			if err == io.EOF {
+				s.log().WithError(err).Warnf("Client closed the connection: %s", client.RemoteIP)
+				return
+			} else if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+				s.log().WithError(err).Warnf("Timeout: %s", client.RemoteIP)
+				return
+			} else if err == LineLimitExceeded {
+				client.sendResponse(r.FailLineTooLong)
+				client.kill()
+				break
+			} else if err != nil {
+				s.log().WithError(err).Warnf("Read error: %s", client.RemoteIP)
+				client.kill()
+				break
+			}
+			if s.isShuttingDown() {
+				client.state = ClientShutdown
+				continue
+			}
+
+			client.sendResponse(r.SuccessAuthLoginCmd, " ", "")
+			client.state = ClientCmd
 
 		case ClientStartTLS:
 			if !client.TLS && sc.TLS.StartTLSOn {
