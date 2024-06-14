@@ -17,11 +17,11 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/phires/go-guerrilla/backends"
-	"github.com/phires/go-guerrilla/log"
-	"github.com/phires/go-guerrilla/mail"
-	"github.com/phires/go-guerrilla/mail/rfc5321"
-	"github.com/phires/go-guerrilla/response"
+	"github.com/iedon/go-guerrilla/backends"
+	"github.com/iedon/go-guerrilla/log"
+	"github.com/iedon/go-guerrilla/mail"
+	"github.com/iedon/go-guerrilla/mail/rfc5321"
+	"github.com/iedon/go-guerrilla/response"
 )
 
 const (
@@ -82,7 +82,7 @@ var (
 	cmdQUIT      command = []byte("QUIT")
 	cmdDATA      command = []byte("DATA")
 	cmdSTARTTLS  command = []byte("STARTTLS")
-  cmdPROXY    command = []byte("PROXY")
+	cmdPROXY     command = []byte("PROXY")
 	cmdAUTHLOGIN command = []byte("AUTH LOGIN")
 )
 

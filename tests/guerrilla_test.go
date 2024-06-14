@@ -18,13 +18,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/phires/go-guerrilla/mail/rfc5321"
+	"github.com/iedon/go-guerrilla/mail/rfc5321"
 
 	"time"
 
-	"github.com/phires/go-guerrilla"
-	"github.com/phires/go-guerrilla/backends"
-	"github.com/phires/go-guerrilla/log"
+	"github.com/iedon/go-guerrilla"
+	"github.com/iedon/go-guerrilla/backends"
+	"github.com/iedon/go-guerrilla/log"
 
 	"bufio"
 
@@ -37,7 +37,7 @@ import (
 
 	"os"
 
-	"github.com/phires/go-guerrilla/tests/testcert"
+	"github.com/iedon/go-guerrilla/tests/testcert"
 )
 
 type TestConfig struct {
@@ -868,7 +868,7 @@ func TestHeloEhlo(t *testing.T) {
 				}
 			}
 
-			expected = fmt.Sprintf("250-%s Hello\r\n250-SIZE 100017\r\n250-PIPELINING\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250 HELP\r\n", hostname)
+			expected = fmt.Sprintf("250-%s Hello\r\n250-SIZE 100017\r\n250-PIPELINING\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-AUTH LOGIN\r\n250 HELP\r\n", hostname)
 			if fullresp != expected {
 				t.Error("Server did not respond with [" + expected + "], it said [" + fullresp + "]")
 			}
