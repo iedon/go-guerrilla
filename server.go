@@ -556,7 +556,7 @@ func (s *server) handleClient(client *client) {
 				client.state = ClientData
 
 			case cmdAUTHLOGIN.match(cmd):
-				client.sendResponse(r.ContinueAuthLoginRequireUsernameCmd, " ", "VXNlcm5hbWU6")
+				client.sendResponse(r.ContinueAuthLoginRequireUsernameCmd)
 				client.state = ClientAuthLoginUser
 
 			case sc.TLS.StartTLSOn && cmdSTARTTLS.match(cmd):
@@ -634,7 +634,7 @@ func (s *server) handleClient(client *client) {
 				continue
 			}
 
-			client.sendResponse(r.ContinueAuthLoginRequirePasswordCmd, " ", "UGFzc3dvcmQ6")
+			client.sendResponse(r.ContinueAuthLoginRequirePasswordCmd)
 			client.state = ClientAuthLoginPassword
 
 		case ClientAuthLoginPassword:
