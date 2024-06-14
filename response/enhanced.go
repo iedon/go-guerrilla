@@ -245,17 +245,17 @@ func init() {
 
 	Canned.ContinueAuthLoginRequireUsernameCmd = &Response{
 		BasicCode: 334,
-		Comment:   "VXNlcm5hbWU6",
+		Comment:   "334 VXNlcm5hbWU6",
 	}
 
 	Canned.ContinueAuthLoginRequirePasswordCmd = &Response{
 		BasicCode: 334,
-		Comment:   "UGFzc3dvcmQ6",
+		Comment:   "334 UGFzc3dvcmQ6",
 	}
 
 	Canned.SuccessAuthLoginCmd = &Response{
 		BasicCode: 235,
-		Comment:   "Authentication successful",
+		Comment:   "235 Authentication successful",
 	}
 
 	Canned.SuccessStartTLSCmd = &Response{
